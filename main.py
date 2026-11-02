@@ -8,7 +8,15 @@ from aiogram.filters import Command
 from aiogram.types import Message
 
 from parsing import get_news, parse_news
-from bd import add_subscriber, remove_subscriber, get_all_subscribers, get_subscriber
+from bd import (
+    add_subscriber,
+    remove_subscriber,
+    get_all_subscribers,
+    get_subscriber,
+    create_subscribers_table,
+)
+
+create_subscribers_table()
 
 # Загрузка переменных окружения из файла .env
 load_dotenv()

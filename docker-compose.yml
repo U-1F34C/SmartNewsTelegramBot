@@ -1,0 +1,13 @@
+services:
+  bot:
+    build:
+      context: .
+    container_name: smart-news-bot
+    restart: unless-stopped
+    network_mode: host
+    working_dir: /app
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    command: python main.py

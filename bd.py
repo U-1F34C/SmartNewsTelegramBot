@@ -1,8 +1,12 @@
 import sqlite3
+from pathlib import Path
+
+DB_PATH = Path(__file__).resolve().parent / 'Subscribers.db'
 
 # Устанавливаем соединение с базой данных
-connection = sqlite3.connect('Subscribers.db')
+connection = sqlite3.connect(DB_PATH)
 cursor = connection.cursor()
+
 
 def create_subscribers_table():
     # Создаем таблицу Subscribers, если она не существует
@@ -14,6 +18,9 @@ def create_subscribers_table():
     )
     ''')
     connection.commit()
+
+
+create_subscribers_table()
 
 def add_subscriber(username, chatid):
     # Добавляем нового подписчика в таблицу Subscribers
