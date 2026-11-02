@@ -8,6 +8,7 @@ from aiogram.filters import Command
 from aiogram.types import Message
 
 from parsing import get_news, parse_news
+from bd import add_subscriber, remove_subscriber, get_all_subscribers, get_subscriber
 
 # Загрузка переменных окружения из файла .env
 load_dotenv()
@@ -37,15 +38,13 @@ async def scheduler():
         news = await parse_news()
 
         if not (news["status"] and news["message"] == "Success"):
-            await asyncio.sleep(120)
+            await asyncio.sleep(5)
             continue
 
-        text = create_text_message(news["data"])
+        for chat_id in get_all_subscribers():
+            await bot.send_message(chat_id=int(chat_id), text=create_text_message(news["data"]))
 
-        for chat_id in list(SUBSCRIBERS):
-            await bot.send_message(chat_id=chat_id, text=text)
-
-        await asyncio.sleep(120)
+        await asyncio.sleep(5)
 
 
 # Обработчик команды /start
@@ -60,13 +59,16 @@ async def command_start_handler(message: Message) -> None:
 # Обработчик команды /subscribe
 @dp.message(Command("subscribe"))
 async def command_subscribe_handler(message: Message) -> None:
-    SUBSCRIBERS.add(message.chat.id)
+    if get_subscriber(message.chat.id):
+        await message.answer("You are already subscribed to news updates.")
+        return
+    add_subscriber(message.from_user.username, message.chat.id)
     await message.answer("You have subscribed to news updates.")
 
 # Обработчик команды /unsubscribe
 @dp.message(Command("unsubscribe"))
 async def command_unsubscribe_handler(message: Message) -> None:
-    SUBSCRIBERS.discard(message.chat.id)
+    remove_subscriber(message.chat.id)
     await message.answer("You have unsubscribed from news updates.")
 
 
